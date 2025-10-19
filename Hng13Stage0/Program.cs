@@ -30,9 +30,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-app.MapGet("/me", async (IHttpClientFactory httpClientFactory, ILogger<Program> logger) =>
+app.MapGet("/me", async (IHttpClientFactory httpClientFactory) =>
 {
-    var catFact = await GetRandomCatFactAsync(httpClientFactory, logger);
+    var catFact = await GetRandomCatFactAsync(httpClientFactory);
 
     var response = new UserResponse
     {
@@ -46,7 +46,7 @@ app.MapGet("/me", async (IHttpClientFactory httpClientFactory, ILogger<Program> 
 app.Run();
 
 // get random cat fact from https://catfact.ninja/fact
-static async Task<CatFact> GetRandomCatFactAsync(IHttpClientFactory httpClientFactory, ILogger logger)
+static async Task<CatFact> GetRandomCatFactAsync(IHttpClientFactory httpClientFactory)
 {
     try
     {
@@ -54,9 +54,8 @@ static async Task<CatFact> GetRandomCatFactAsync(IHttpClientFactory httpClientFa
         return await client.GetFromJsonAsync<CatFact>("https://catfact.ninja/fact")
          ?? CatFact.Fallback;
     }
-    catch (Exception ex)
+    catch (Exception)
     {
-        logger.LogError(ex, "Failed to fetch cat fact.");
         return CatFact.Fallback;
     }
 }
